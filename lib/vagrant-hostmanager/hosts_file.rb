@@ -84,20 +84,7 @@ module VagrantPlugins
       end
 
       def get_ip_address(machine, resolving_machine)
-        custom_ip_resolver = machine.config.hostmanager.ip_resolver
-        if custom_ip_resolver
-          custom_ip_resolver.call(machine, resolving_machine)
-        else
-          ip = nil
-          if machine.config.hostmanager.ignore_private_ip != true
-            machine.config.vm.networks.each do |network|
-              key, options = network[0], network[1]
-              ip = options[:ip] if key == :private_network
-              break if ip
-            end
-          end
-          ip || (machine.ssh_info ? machine.ssh_info[:host] : nil)
-        end
+        machine.config.hostmanager.ip_resolver.call(machine, resolving_machine)
       end
 
       def get_machines

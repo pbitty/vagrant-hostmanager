@@ -1,6 +1,9 @@
+require_relative 'resolvers'
+
 module VagrantPlugins
   module HostManager
     class Config < Vagrant.plugin('2', :config)
+
       attr_accessor :enabled
       attr_accessor :manage_host
       attr_accessor :ignore_private_ip
@@ -28,6 +31,7 @@ module VagrantPlugins
         @ignore_private_ip = false if @ignore_private_ip == UNSET_VALUE
         @include_offline = false if @include_offline == UNSET_VALUE
         @aliases = [ @aliases ].flatten
+        @ip_resolver ||= VagrantPlugins::HostManager::Resolvers.default
       end
 
       def validate(machine)
