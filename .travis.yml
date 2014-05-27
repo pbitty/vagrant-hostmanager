@@ -1,0 +1,10 @@
+---
+language: ruby
+rvm:
+  - 2.0.0
+before_install:
+  - deb http://download.virtualbox.org/virtualbox/debian precise contrib
+  - wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
+  - sudo apt-get update
+  - sudo apt-get install virtualbox-4.3
+script: test/test-travis.sh
