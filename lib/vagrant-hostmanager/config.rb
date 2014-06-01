@@ -1,3 +1,5 @@
+require 'vagrant-hostmanager/hosts_file/resolvers'
+
 module VagrantPlugins
   module HostManager
     class Config < Vagrant.plugin('2', :config)
