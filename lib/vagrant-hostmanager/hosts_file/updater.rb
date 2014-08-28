@@ -1,4 +1,5 @@
 require 'tempfile'
+require_relative 'block'
 
 module VagrantPlugins
   module HostManager
@@ -80,13 +81,11 @@ module VagrantPlugins
         end
 
         def update_content(file_content, resolving_machine, include_id)
-          id = include_id ? " id: #{read_or_create_id}" : ""
-          header = "## vagrant-hostmanager-start#{id}\n"
-          footer = "## vagrant-hostmanager-end\n"
+          id = include_id ? read_or_create_id : nil
           body = get_machines
             .map { |machine| get_hosts_file_entry(machine, resolving_machine) }
             .join
-          get_new_content(header, footer, body, file_content)
+          Block.new(id: id, body: body).replace_in(file_content)
         end
 
         def get_hosts_file_entry(machine, resolving_machine)
@@ -133,20 +132,6 @@ module VagrantPlugins
                 machine
               end
             .reject(&:nil?)
-        end
-
-        def get_new_content(header, footer, body, old_content)
-          if body.empty?
-            block = "\n"
-          else
-            block = "\n\n" + header + body + footer + "\n"
-          end
-          # Pattern for finding existing block
-          header_pattern = Regexp.quote(header)
-          footer_pattern = Regexp.quote(footer)
-          pattern = Regexp.new("\n*#{header_pattern}.*?#{footer_pattern}\n*", Regexp::MULTILINE)
-          # Replace existing block or append
-          old_content.match(pattern) ? old_content.sub(pattern, block) : old_content.rstrip + block
         end
 
         def read_or_create_id
